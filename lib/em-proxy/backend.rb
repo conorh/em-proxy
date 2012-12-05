@@ -1,11 +1,18 @@
 module EventMachine
   module ProxyServer
     class Backend < EventMachine::Connection
-      attr_accessor :plexer, :name, :debug
+      attr_accessor :plexer, :name, :debug, :tls
 
-      def initialize(debug = false)
+      def initialize(debug = false, tls = false)
         @debug = debug
+        @tls = tls
         @connected = EM::DefaultDeferrable.new
+      end
+
+      def post_init
+        if @tls
+          start_tls
+        end
       end
 
       def connection_completed

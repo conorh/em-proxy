@@ -2,6 +2,7 @@ module EventMachine
   module ProxyServer
     class Connection < EventMachine::Connection
       attr_accessor :debug
+      attr_accessor :options
 
       ##### Proxy Methods
       def on_data(&blk); @on_data = blk; end
@@ -43,7 +44,7 @@ module EventMachine
       # initialize connections to backend servers
       #
       def server(name, opts)
-        srv = EventMachine::bind_connect(opts[:bind_host], opts[:bind_port], opts[:host], opts[:port], EventMachine::ProxyServer::Backend, @debug) do |c|
+        srv = EventMachine::bind_connect(opts[:bind_host], opts[:bind_port], opts[:host], opts[:port], EventMachine::ProxyServer::Backend, @debug, opts[:tls]) do |c|
           c.name = name
           c.plexer = self
           c.proxy_incoming_to(self, 10240) if opts[:relay_server]
